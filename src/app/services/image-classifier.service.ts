@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import * as tf from '@tensorflow/tfjs';
 import * as mobilenet from '@tensorflow-models/mobilenet';
-// const mobilenet = require('@tensorflow-models/mobilenet');
 
 @Injectable({
   providedIn: 'root',
