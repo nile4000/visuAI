@@ -1,5 +1,7 @@
 # visuAI - Frontend
 
+![alt text](./src/assets/img/screenshot.png "visuAI")
+
 ## Description
 
 A Picturerecognition App with a simple frontend and tensorflow integrated. The frontend is written with Angular Version 16.1.0.
