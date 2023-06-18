@@ -1,0 +1,42 @@
+<mat-form-field>
+  <div>
+    <mat-toolbar>
+      <input
+        matInput
+        [value]="
+          selectedFileNames.length ? selectedFileNames : 'Bilder auswählen'
+        "
+      />
+    </mat-toolbar>
+    <input
+      type="file"
+      id="fileInput"
+      name="fileInput"
+      accept="image/*"
+      multiple
+      (change)="selectFiles($event)"
+    />
+  </div>
+  <div>
+    <img *ngFor="let preview of previews" [src]="preview" class="preview" />
+  </div>
+</mat-form-field>
+
+<mat-card>
+  <mat-card-header>
+    <mat-card-title>Resultat:</mat-card-title>
+  </mat-card-header>
+  <mat-card-content>
+    <div *ngIf="predictions" class="message">
+      <div class="prediction"
+        *ngFor="let prediction of predictions; let i = index"
+      >
+        <p><strong>Klasse:</strong> {{ prediction.className }}</p>
+        <p>
+          <strong>Wahrscheinlichkeit:</strong>
+          {{ prediction.probability | percent }}
+        </p>
+      </div>
+    </div>
+  </mat-card-content>
+</mat-card>
