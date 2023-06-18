@@ -1,10 +1,4 @@
-.progress-bar {
-  padding: 0;
-}
 
-.progress {
-  width: 50px;
-}
 
 .mat-input-element {
   font-size: medium;
@@ -16,6 +10,10 @@ mat-card {
   justify-content: space-between;
 }
 
+mat-form-field, mat-card {
+  width: 90%; /* Setzen Sie die gewünschte Breite */
+}
+
 #fileInput {
   position: absolute;
   cursor: pointer;
@@ -24,16 +22,14 @@ mat-card {
   height: 100%;
   left: 0px;
   top: 0px;
+  border-radius: 20%;
 }
 
 .mat-toolbar-single-row {
   height: auto !important;
   background: transparent;
   padding: 0;
-}
-
-.mat-toolbar-single-row button {
-  width: 100px;
+  width: auto !important;
 }
 
 .mat-form-field {
@@ -41,18 +37,28 @@ mat-card {
 }
 
 .message {
-  background-color: #ddd;
-  padding: 15px;
-  color: #333;
   border: #aaa solid 1px;
   border-radius: 4px;
-  margin: 15px 0;
-
-  .prediction {
-    display: flex;
-    justify-content: space-between;
-  }
 }
+.table {
+  display: flex;
+  flex-direction: column;
+}
+
+.table-row {
+  display: flex;
+}
+
+.table-row.header {
+  font-weight: bold;
+}
+
+.table-cell {
+  flex: 1;
+  padding: 5px;
+  border: 1px solid #ccc;
+}
+
 
 .preview {
   max-width: 50px;

@@ -47,8 +47,6 @@ export class UploadImagesComponent implements OnInit {
   async predictClass(img: any) {
     if (this.imageClassifierService.model) {
       this.predictions = await this.imageClassifierService.classifyImage(img);
-      console.log('Predictions');
-      console.log(this.predictions);
     } else {
       console.error('Model not loaded');
     }
