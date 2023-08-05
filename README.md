@@ -17,3 +17,9 @@ Run `ng build` to build the project. The build artifacts will be stored in the `
 ## Further help
 
 To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.io/cli) page.
+
+## Support
+If you have any questions or issues, please contact nile4000.
+
+## License
+This project is licensed under the MIT License.
