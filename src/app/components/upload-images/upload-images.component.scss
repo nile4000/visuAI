@@ -1,17 +1,10 @@
-
-
 .mat-input-element {
   font-size: medium;
   font-weight: 200;
 }
 
-mat-card {
-  display: flex;
-  justify-content: space-between;
-}
-
-mat-form-field, mat-card {
-  width: 90%; /* Setzen Sie die gewünschte Breite */
+.spacer {
+  padding: 10px;
 }
 
 #fileInput {
@@ -22,7 +15,8 @@ mat-form-field, mat-card {
   height: 100%;
   left: 0px;
   top: 0px;
-  border-radius: 20%;
+  border-radius: 10px;
+  padding-bottom: 2px;
 }
 
 .mat-toolbar-single-row {
@@ -30,10 +24,6 @@ mat-form-field, mat-card {
   background: transparent;
   padding: 0;
   width: auto !important;
-}
-
-.mat-form-field {
-  width: 100%;
 }
 
 .message {
@@ -59,9 +49,8 @@ mat-form-field, mat-card {
   border: 1px solid #ccc;
 }
 
-
 .preview {
-  max-width: 50px;
+  max-width: 40px;
   vertical-align: middle;
 }
 

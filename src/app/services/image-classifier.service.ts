@@ -1,19 +1,20 @@
-import { Injectable } from '@angular/core';
+import { Injectable, OnInit } from '@angular/core';
 import * as tf from '@tensorflow/tfjs';
 import * as mobilenet from '@tensorflow-models/mobilenet';
 
 @Injectable({
   providedIn: 'root',
 })
-export class ImageClassifierService {
-  model: mobilenet.MobileNet | undefined;
+export class ImageClassifierService implements OnInit {
+  public model: mobilenet.MobileNet | null = null;
+  private modelLoadPromise?: Promise<void>;
 
-  constructor() {
+  ngOnInit() {
     tf.setBackend('webgl');
-    this.loadModel();
+    this.modelLoadPromise = this.loadModel();
   }
 
-  async loadModel(): Promise<void> {
+  private async loadModel(): Promise<void> {
     this.model = await mobilenet.load();
   }
 
@@ -29,8 +30,12 @@ export class ImageClassifierService {
       probability: number;
     }>
   > {
+    if (!this.model) {
+      await this.modelLoadPromise;
+    }
+
     if (this.model) {
-      return await this.model.classify(imageElement);
+      return this.model.classify(imageElement);
     } else {
       throw new Error('Model not loaded');
     }

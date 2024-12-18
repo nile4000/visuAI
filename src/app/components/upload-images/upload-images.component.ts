@@ -1,54 +1,145 @@
-import { Component, OnInit } from '@angular/core';
+import { PercentPipe } from '@angular/common';
+import { Component, inject, signal } from '@angular/core';
+import {
+  MatCard,
+  MatCardContent,
+  MatCardHeader,
+  MatCardTitle,
+} from '@angular/material/card';
+import { MatFormField } from '@angular/material/form-field';
+import { MatToolbar } from '@angular/material/toolbar';
 import { Observable } from 'rxjs';
 import { ImageClassifierService } from 'src/app/services/image-classifier.service';
 
+interface Prediction {
+  className: string;
+  probability: number;
+}
 
 @Component({
   selector: 'app-upload-images',
+  standalone: true,
+  imports: [
+    MatToolbar,
+    MatCard,
+    MatCardHeader,
+    MatCardTitle,
+    MatCardContent,
+    PercentPipe,
+  ],
   templateUrl: './upload-images.component.html',
   styleUrls: ['./upload-images.component.scss'],
 })
-export class UploadImagesComponent implements OnInit {
-  selectedFiles?: FileList;
-  selectedFileNames: string[] = [];
-  previews: string[] = [];
-  imageInfos?: Observable<any>;
-  predictions: { className: string; probability: number; }[] | undefined;
+export class UploadImagesComponent {
+  // Signals für den Zustand
+  selectedFiles = signal<FileList | undefined>(undefined);
+  selectedFileNames = signal<string[]>([]);
+  previews = signal<string[]>([]);
+  predictions = signal<Prediction[] | undefined>(undefined);
 
-  constructor(
-    private imageClassifierService: ImageClassifierService
-  ) {}
+  imageInfos?: Observable<any | undefined>;
 
-  ngOnInit(): void {
-  }
+  private imageClassifierService = inject(ImageClassifierService);
 
-  async selectFiles(event: any): Promise<void> {
-    this.selectedFileNames = [];
-    this.selectedFiles = event.target.files;
+  /**
+   * Wird aufgerufen, wenn eine oder mehrere Dateien über das Input ausgewählt werden.
+   * Liest die Dateien ein, erstellt Vorschaubilder und führt Klassifizierungen durch.
+   */
+  async selectFiles(event: Event): Promise<void> {
+    const input = event.target as HTMLInputElement;
+    const files = input.files;
+    if (!files || files.length === 0) {
+      return;
+    }
 
-    this.previews = [];
-    if (this.selectedFiles && this.selectedFiles[0]) {
-      const numberOfFiles = this.selectedFiles.length;
-      for (let i = 0; i < numberOfFiles; i++) {
-        const reader = new FileReader();
-        reader.onload = async (e: any) => {
-          this.previews.push(e.target.result);
-          const img = new Image();
-          img.src = e.target.result;
-          await img.decode(); // Wait for image to load
-          this.predictClass(img);
-        };
-        reader.readAsDataURL(this.selectedFiles[i]);
-        this.selectedFileNames.push(this.selectedFiles[i].name);
+    // Dateien in ein Array umwandeln
+    const fileArray = Array.from(files);
+
+    this.selectedFiles.set(files);
+    this.selectedFileNames.set([]);
+    this.previews.set([]);
+    this.predictions.set(undefined);
+
+    const imagePromises: Promise<HTMLImageElement>[] = [];
+
+    for (const file of fileArray) {
+      // Namen hinzufügen
+      this.selectedFileNames.update((names) => [...names, file.name]);
+      // Bild laden und Promise speichern
+      imagePromises.push(this.loadImage(file));
+    }
+
+    try {
+      // Warten bis alle Bilder geladen sind
+      const images = await Promise.all(imagePromises);
+
+      const predictionResults: Prediction[] = [];
+      for (const img of images) {
+        const preds = await this.predictClass(img);
+        if (preds) {
+          predictionResults.push(...preds);
+        }
       }
+
+      this.predictions.set(predictionResults);
+    } catch (error) {
+      console.error('Fehler beim Verarbeiten der Bilder:', error);
     }
   }
 
-  async predictClass(img: any) {
-    if (this.imageClassifierService.model) {
-      this.predictions = await this.imageClassifierService.classifyImage(img);
-    } else {
-      console.error('Model not loaded');
+  /**
+   * Lädt eine Bilddatei ein, erstellt ein Vorschaubild (DataURL) und gibt das fertige HTMLImageElement zurück.
+   */
+  private loadImage(file: File): Promise<HTMLImageElement> {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+
+      reader.onload = () => {
+        const result = reader.result;
+        if (typeof result === 'string') {
+          // Vorschau hinzufügen
+          this.previews.update((previews) => [...previews, result]);
+
+          const img = new Image();
+          img.src = result;
+          img
+            .decode()
+            .then(() => resolve(img))
+            .catch((err) =>
+              reject(`Fehler beim Dekodieren des Bildes: ${err}`)
+            );
+        } else {
+          reject('Fehler: Reader result ist kein string.');
+        }
+      };
+
+      reader.onerror = (e) => {
+        reject(`Fehler beim Lesen der Datei ${file.name}: ${e}`);
+      };
+
+      reader.readAsDataURL(file);
+    });
+  }
+
+  /**
+   * Klassifiziert ein bereits geladenes HTMLImageElement über den ImageClassifierService.
+   * Gibt eine Liste von Vorhersagen (Predictions) zurück.
+   */
+  private async predictClass(
+    img: HTMLImageElement
+  ): Promise<Prediction[] | undefined> {
+    if (!this.imageClassifierService.model) {
+      console.error(
+        'Das Modell ist noch nicht geladen. Bitte versuchen Sie es später erneut.'
+      );
+      return undefined;
+    }
+
+    try {
+      return await this.imageClassifierService.classifyImage(img);
+    } catch (error) {
+      console.error('Fehler bei der Klassifizierung:', error);
+      return undefined;
     }
   }
 }
