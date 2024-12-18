@@ -1,6 +1,5 @@
 <mat-toolbar>
   <input
-    matInput
     [value]="selectedFileNames.length ? selectedFileNames : 'Bild auswählen'"
   />
   @if(previews().length) { @for(preview of previews(); track preview) {
@@ -10,9 +9,9 @@
   }
 </mat-toolbar>
 <input
-  type="file"
   id="fileInput"
-  matInput
+  name="fileInput"
+  type="file"
   accept="image/*"
   (change)="selectFiles($event)"
 />
@@ -39,4 +38,3 @@
     }
   </mat-card-content>
 </mat-card>
-<div class="spacer"></div>

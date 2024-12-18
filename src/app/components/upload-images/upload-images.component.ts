@@ -6,7 +6,6 @@ import {
   MatCardHeader,
   MatCardTitle,
 } from '@angular/material/card';
-import { MatFormField } from '@angular/material/form-field';
 import { MatToolbar } from '@angular/material/toolbar';
 import { Observable } from 'rxjs';
 import { ImageClassifierService } from 'src/app/services/image-classifier.service';
