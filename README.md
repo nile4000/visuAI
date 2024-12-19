@@ -45,9 +45,9 @@ Once the server is running, open your browser at http://localhost:4200/. The app
 ## Build
 
 To create a production build:
-
    ```bash
    ng serve
+   ```
 
 ## Support
 
