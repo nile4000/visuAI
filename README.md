@@ -1,24 +1,56 @@
 # visuAI - Frontend
 
-![alt text](./src/assets/img/screenshot.png "visuAI")
+![visuAI Screenshot](./src/assets/img/screenshot.png "visuAI")
 
 ## Description
 
-A Picturerecognition App with a simple frontend and tensorflow integrated. The frontend is written with Angular Version 16.1.0.
+visuAI is an image recognition application that analyzes images and suggests the most likely categories.  
+This project uses TensorFlow (MobileNet | WebGL) for image classification.
 
-## Development server
+## Features
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The application will automatically reload if you change any of the source files.
+- **Image Classification:** Quickly identify objects in images.
+- **High Compatibility:** Runs directly in your browser using TensorFlow.js.
+- **Easy to Use:** Simple interface for uploading and analyzing images.
+
+## Getting Started
+
+### Prerequisites
+
+- [Node.js](https://nodejs.org/) 
+- [Angular CLI](https://angular.io/cli)
+
+### Installation
+
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/nile4000/visuAI-frontend.git
+
+2. Navigate into the project directory:
+   ```bash
+   cd visuAI-frontend
+
+3. Install dependencies
+   ```bash
+   npm install
+
+## Development Server
+
+Run the development server:
+    ```bash
+    ng serve
+
+Once the server is running, open your browser at http://localhost:4200/. The application automatically reloads when you modify any source files.
 
 ## Build
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory.
+To create a production build:
 
-## Further help
-
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.io/cli) page.
+   ```bash
+   ng serve
 
 ## Support
+
 If you have any questions or issues, please contact nile4000.
 
 ## License
