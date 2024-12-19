@@ -1,4 +1,4 @@
-# visuAI - Frontend
+# visuAI - Image recognition
 
 ![visuAI Screenshot](./src/assets/img/screenshot.png "visuAI")
 
