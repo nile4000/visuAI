@@ -39,6 +39,7 @@ This project uses TensorFlow (MobileNet | WebGL) for image classification.
 Run the development server:
     ```bash
     ng serve
+    ```
 
 Once the server is running, open your browser at http://localhost:4200/. The application automatically reloads when you modify any source files.
 
