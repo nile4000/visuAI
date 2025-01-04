@@ -1,5 +1,5 @@
 import { PercentPipe } from '@angular/common';
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import {
   MatCard,
   MatCardContent,
@@ -7,13 +7,8 @@ import {
   MatCardTitle,
 } from '@angular/material/card';
 import { MatToolbar } from '@angular/material/toolbar';
-import { Observable } from 'rxjs';
 import { ImageClassifierService } from 'src/app/services/image-classifier.service';
-
-interface Prediction {
-  className: string;
-  probability: number;
-}
+import { Prediction } from '../../common/interfaces/prediction.interface';
 
 @Component({
   selector: 'app-upload-images',
@@ -29,20 +24,38 @@ interface Prediction {
   templateUrl: './upload-images.component.html',
   styleUrls: ['./upload-images.component.scss'],
 })
-export class UploadImagesComponent {
+export class UploadImagesComponent implements OnInit {
   // Signals für den Zustand
   selectedFiles = signal<FileList | undefined>(undefined);
   selectedFileNames = signal<string[]>([]);
   previews = signal<string[]>([]);
   predictions = signal<Prediction[] | undefined>(undefined);
-
-  imageInfos?: Observable<any | undefined>;
+  
+  // Signal für Lade-Status
+  isLoading = signal<boolean>(false);
 
   private imageClassifierService = inject(ImageClassifierService);
 
+  ngOnInit(): void {
+    this.loadModelOnInit();
+  }
+
   /**
-   * Wird aufgerufen, wenn eine oder mehrere Dateien über das Input ausgewählt werden.
-   * Liest die Dateien ein, erstellt Vorschaubilder und führt Klassifizierungen durch.
+   * Lädt das Modell beim Start der Komponente.
+   */
+  private async loadModelOnInit(): Promise<void> {
+    try {
+      this.isLoading.set(true);        // Spinner ein
+      await this.imageClassifierService.initModel();
+    } catch (err) {
+      console.error('Fehler beim Laden des Modells:', err);
+    } finally {
+      this.isLoading.set(false);       // Spinner aus
+    }
+  }
+
+  /**
+   * Wird aufgerufen, wenn Dateien über das Input ausgewählt werden.
    */
   async selectFiles(event: Event): Promise<void> {
     const input = event.target as HTMLInputElement;
@@ -61,17 +74,19 @@ export class UploadImagesComponent {
 
     const imagePromises: Promise<HTMLImageElement>[] = [];
 
-    for (const file of fileArray) {
-      // Namen hinzufügen
-      this.selectedFileNames.update((names) => [...names, file.name]);
-      // Bild laden und Promise speichern
-      imagePromises.push(this.loadImage(file));
-    }
-
     try {
+      this.isLoading.set(true); // Spinner ein
+
+      // Alle Bilder laden
+      for (const file of fileArray) {
+        this.selectedFileNames.update((names) => [...names, file.name]);
+        imagePromises.push(this.loadImage(file));
+      }
+
       // Warten bis alle Bilder geladen sind
       const images = await Promise.all(imagePromises);
 
+      // Klassifizierungen
       const predictionResults: Prediction[] = [];
       for (const img of images) {
         const preds = await this.predictClass(img);
@@ -83,11 +98,13 @@ export class UploadImagesComponent {
       this.predictions.set(predictionResults);
     } catch (error) {
       console.error('Fehler beim Verarbeiten der Bilder:', error);
+    } finally {
+      this.isLoading.set(false); // Spinner aus
     }
   }
 
   /**
-   * Lädt eine Bilddatei ein, erstellt ein Vorschaubild (DataURL) und gibt das fertige HTMLImageElement zurück.
+   * Lädt eine Bilddatei und erstellt ein Vorschaubild.
    */
   private loadImage(file: File): Promise<HTMLImageElement> {
     return new Promise((resolve, reject) => {
@@ -96,8 +113,7 @@ export class UploadImagesComponent {
       reader.onload = () => {
         const result = reader.result;
         if (typeof result === 'string') {
-          // Vorschau hinzufügen
-          this.previews.update((previews) => [...previews, result]);
+          this.previews.update((prevs) => [...prevs, result]);
 
           const img = new Image();
           img.src = result;
@@ -121,8 +137,7 @@ export class UploadImagesComponent {
   }
 
   /**
-   * Klassifiziert ein bereits geladenes HTMLImageElement über den ImageClassifierService.
-   * Gibt eine Liste von Vorhersagen (Predictions) zurück.
+   * Klassifiziert ein bereits geladenes HTMLImageElement.
    */
   private async predictClass(
     img: HTMLImageElement

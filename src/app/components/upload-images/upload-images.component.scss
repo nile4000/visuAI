@@ -7,6 +7,27 @@
   padding: 10px;
 }
 
+.spinner-overlay {
+  position: fixed; 
+  top: 0; 
+  left: 0; 
+  width: 100vw; 
+  height: 100vh; 
+  display: flex; 
+  align-items: center; 
+  justify-content: center; 
+  background: rgba(0,0,0,0.3);
+  z-index: 9998; 
+}
+
+.spinner {
+  width: 100px;
+  height: 100px;
+  font-size: 20px;
+  font-weight: bold;
+  z-index: 9999; 
+}
+
 #fileInput {
   position: absolute;
   z-index: 10;

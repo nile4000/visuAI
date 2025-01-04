@@ -1,21 +1,22 @@
-import { Injectable, OnInit } from '@angular/core';
+import { Injectable } from '@angular/core';
 import * as tf from '@tensorflow/tfjs';
 import * as mobilenet from '@tensorflow-models/mobilenet';
 
 @Injectable({
   providedIn: 'root',
 })
-export class ImageClassifierService implements OnInit {
+export class ImageClassifierService {
   public model: mobilenet.MobileNet | null = null;
   private modelLoadPromise?: Promise<void>;
 
-  ngOnInit() {
+  async initModel(): Promise<void> {
     tf.setBackend('webgl');
-    this.modelLoadPromise = this.loadModel();
+    await this.loadModel();
   }
 
   private async loadModel(): Promise<void> {
     this.model = await mobilenet.load();
+    console.log('Mobilenet geladen');
   }
 
   async classifyImage(

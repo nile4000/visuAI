@@ -1,20 +1,35 @@
+@if(isLoading()) {
+<div class="spinner-overlay">
+  <div class="spinner">Mobilenet laden...</div>
+</div>
+}
+
 <mat-toolbar>
-  <input
-    [value]="selectedFileNames.length ? selectedFileNames : 'Bild auswählen'"
-  />
-  @if(previews().length) { @for(preview of previews(); track preview) {
+  <!-- Label für das unsichtbare File-Input -->
+  <label for="fileInput" class="upload-label">
+    {{
+      selectedFileNames().length
+        ? selectedFileNames().join(", ")
+        : "Bild auswählen"
+    }}
+  </label>
+
+  @if(previews().length) { @for (preview of previews(); track preview) {
   <img [src]="preview" class="preview" />
   } } @else {
-  <img src="./../../../assets/img/sample.png" class="preview" />
+  <img src="assets/img/sample.png" class="preview" />
   }
 </mat-toolbar>
+
 <input
   id="fileInput"
   name="fileInput"
   type="file"
   accept="image/*"
   (change)="selectFiles($event)"
+  style="display: none"
 />
+
 <mat-card>
   <mat-card-header>
     <mat-card-title>Resultat:</mat-card-title>
@@ -27,10 +42,12 @@
           <div class="table-cell"><strong>Klasse</strong></div>
           <div class="table-cell"><strong>Wahrscheinlichkeit</strong></div>
         </div>
-        @for(prediction of predictions(); track prediction) {
+        @for(pred of predictions(); track pred) {
         <div class="table-row">
-          <div class="table-cell">{{ prediction.className }}</div>
-          <div class="table-cell">{{ prediction.probability | percent }}</div>
+          <div class="table-cell">{{ pred.className }}</div>
+          <div class="table-cell">
+            {{ pred.probability | percent }}
+          </div>
         </div>
         }
       </div>
